@@ -1,4 +1,6 @@
-/* global google, MarkerClusterer, Tabletop */
+/* global google */
+import MarkerClusterer from '@google/markerclusterer';
+import Tabletop from 'tabletop';
 ( function( $ ) {
 	const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/{GOOGLE_SHEET_ID}/pubhtml';
 	// var map;
