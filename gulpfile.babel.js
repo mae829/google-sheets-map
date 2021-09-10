@@ -10,6 +10,7 @@ import autoprefixer from 'gulp-autoprefixer';
 import cleanCSS from 'gulp-clean-css';
 import nodeSass from 'node-sass';
 import gulpSass from 'gulp-sass';
+import sourcemaps from 'gulp-sourcemaps';
 import styleLint from 'gulp-stylelint';
 
 // JS related plugins.
@@ -108,12 +109,26 @@ export const css = done => {
 	del( './assets/css/*' );
 
 	src( './src/sass/main.scss' )
-		.pipe( sass() )
-		.pipe( autoprefixer() )
-		.pipe( cleanCSS() )
-		.pipe( rename( {
-			basename: 'style',
-			suffix: '.min',
+		.pipe( sourcemaps.init() )
+		.pipe( plumber( errorHandler ) )
+		.pipe( sass( { outputStyle: 'expanded' } ).on( 'error', sass.logError ) )
+		.pipe( dest( './assets/css' ) )
+		.pipe( autoprefixer( {
+			cascade: false,
+		} ) )
+		.pipe( cleanCSS( {
+			level: {
+				2: {
+					all: false,
+					mergeIntoShorthands: true,
+					mergeMedia: true,
+				},
+			},
+		} ) )
+		.pipe( rename( { suffix: '.min' } ) )
+		.pipe( sourcemaps.write( '.', {
+			includeContent: false,
+			sourceRoot: '../../src/sass',
 		} ) )
 		.pipe( dest( './assets/css' ) )
 		.pipe( server.stream( {
@@ -174,8 +189,8 @@ export const build   = parallel( css, js );
 /**
  * Watch Tasks.
  */
-export const dev = series( styles, scripts, browsersync, () => {
-	watch( '**/*.php', reload ); // Reload on PHP file changes.
+export const dev = series( lint, build, browsersync, () => {
+	watch( './**/*.php', reload ); // Reload on PHP file changes.
 	watch( './src/sass/**/*.scss', styles ); // Reload on SCSS file changes.
 	watch( './src/js/**/*.js', scripts ); // Reload on JS file changes.
 } );
