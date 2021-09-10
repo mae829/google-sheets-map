@@ -28,13 +28,13 @@ const server = browserSync.create();
 /**
  * Custom Error Handler.
  *
- * @param Mixed error
+ * @param {Object} error
  */
 const errorHandler = error => {
 	notify.onError( {
 		title: 'Gulp error in ' + error.plugin,
 		message: error.toString(),
-		sound: false
+		sound: false,
 	} )( error );
 };
 
@@ -42,11 +42,12 @@ const errorHandler = error => {
  * Task: `browsersync`.
  *
  * Live Reloads, CSS injections, Localhost tunneling.
- * @link http://www.browsersync.io/docs/options/
+ *
+ * {@link} http://www.browsersync.io/docs/options/
  *
  * BrowserSync options can be overwritten by gulp.config.local.js file.
  *
- * @param {Mixed} done Done.
+ * @param {*} done Done.
  */
 const browsersync = done => {
 	server.init( {
@@ -77,6 +78,8 @@ const reload = done => {
  *    5. Renames the CSS file with suffix .min.css
  *    6. Minifies the CSS file and generates *.min.css
  *    7. Injects CSS or reloads the browser via server
+ *
+ * @param {Function} done Callback function for async purposes.
  */
 export const styles = done => {
 	src( 'css/sass/main.scss' )
@@ -85,11 +88,11 @@ export const styles = done => {
 		.pipe( cleanCSS() )
 		.pipe( rename( {
 			basename: 'style',
-			suffix: '.min'
+			suffix: '.min',
 		} ) )
-		.pipe( dest('css') )
+		.pipe( dest( 'css' ) )
 		.pipe( server.stream( {
-			match: '**/*.css' // Sourcemap is in stream so match for actual CSS files
+			match: '**/*.css', // Sourcemap is in stream so match for actual CSS files
 		} ) );
 
 	done();
@@ -102,7 +105,7 @@ styles.description = 'Compiles Sass, Autoprefixes it and Minifies CSS.';
  *    1. Gets all our theme files
  *    2. Lints theme files to keep code up to standards and consistent
  */
- export const jsLinter = () => {
+export const jsLinter = () => {
 	return src( [
 		'./js/**/*.js',
 		'!js/vendor/**',
@@ -118,20 +121,20 @@ jsLinter.description = 'Linter for JavaScript';
  */
 export const js = () => {
 	return src( [
-			'js/vendor/tabletop.min.js',
-			'js/vendor/markerclusterer.js',
-			'js/main.js'
-		] )
+		'js/vendor/tabletop.min.js',
+		'js/vendor/markerclusterer.js',
+		'js/main.js',
+	] )
 		.pipe( plumber( errorHandler ) )
-		.pipe( concat('init.js') )
+		.pipe( concat( 'init.js' ) )
 		.pipe( uglify() )
 		.pipe( rename( {
-			suffix: '.min'
+			suffix: '.min',
 		} ) )
-		.pipe( dest('js') )
+		.pipe( dest( 'js' ) )
 		.pipe( server.reload( {
 			match: '**/*.js', // Sourcemap is in stream so match for actual JS files
-			stream: true
+			stream: true,
 		} ) );
 };
 js.description = 'Run all JS compression and sourcemap work.';
@@ -144,7 +147,7 @@ export const scripts = series( jsLinter, js );
 export const dev = series( styles, scripts, browsersync, () => {
 	watch( '**/*.php', reload ); // Reload on PHP file changes.
 	watch( 'css/**/*.scss', styles ); // Reload on SCSS file changes.
-	watch( ['js/*.js', '!js/*.min.js'], scripts ); // Reload on JS file changes.
+	watch( [ 'js/*.js', '!js/*.min.js' ], scripts ); // Reload on JS file changes.
 } );
 dev.description = 'Start up our full dev workflow.';
 
