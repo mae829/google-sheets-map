@@ -3,13 +3,14 @@
  *
  * Load gulp plugins and passing them semantic names.
  */
-import { dest, src, series, watch } from 'gulp';
+import { dest, parallel, src, series, watch } from 'gulp';
 
 // CSS related plugins.
 import autoprefixer from 'gulp-autoprefixer';
 import cleanCSS from 'gulp-clean-css';
 import nodeSass from 'node-sass';
 import gulpSass from 'gulp-sass';
+import styleLint from 'gulp-stylelint';
 
 // JS related plugins.
 import eslint from 'gulp-eslint';
@@ -68,6 +69,25 @@ const reload = done => {
 };
 
 /**
+ * Task: `sassLinter`.
+ * This task does the following:
+ *    1. Gets all our scss files
+ *    2. Lints theme files to keep code up to standards and consistent
+ */
+export const sassLinter = () => {
+	return src( './src/sass/**/*.scss' )
+		.pipe( plumber( errorHandler ) )
+		.pipe( styleLint( {
+			syntax: 'scss',
+			reporters: [ {
+				formatter: 'string',
+				console: true,
+			} ],
+		} ) );
+};
+sassLinter.description = 'Lint through all our SASS/SCSS files so our code is consistent across files.';
+
+/**
  * Task: `css`.
  *
  * This task does the following:
@@ -81,7 +101,7 @@ const reload = done => {
  *
  * @param {Function} done Callback function for async purposes.
  */
-export const styles = done => {
+export const css = done => {
 	src( './src/sass/main.scss' )
 		.pipe( sass() )
 		.pipe( autoprefixer() )
@@ -97,7 +117,7 @@ export const styles = done => {
 
 	done();
 };
-styles.description = 'Compiles Sass, Autoprefixes it and Minifies CSS.';
+css.description = 'Compiles Sass, Autoprefixes it and Minifies CSS.';
 
 /**
  * Task: `jsLinter`.
@@ -139,7 +159,10 @@ export const js = () => {
 };
 js.description = 'Run all JS compression and sourcemap work.';
 
+export const styles  = series( sassLinter, css );
 export const scripts = series( jsLinter, js );
+export const lint    = parallel( sassLinter, jsLinter );
+export const build   = parallel( css, js );
 
 /**
  * Watch Tasks.
