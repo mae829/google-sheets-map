@@ -14,8 +14,10 @@ import styleLint from 'gulp-stylelint';
 
 // JS related plugins.
 import eslint from 'gulp-eslint';
-import uglify from 'gulp-uglify';
-import concat from 'gulp-concat';
+import named from 'vinyl-named';
+import webpack from 'webpack';
+import webpackStream from 'webpack-stream';
+import webpackConfig from './webpack.config.js';
 
 // Utility related plugins.
 import browserSync from 'browser-sync';
@@ -140,22 +142,22 @@ export const jsLinter = () => {
 jsLinter.description = 'Linter for JavaScript';
 
 /**
- * Handle JS build.
+ * Task: `js`.
+ *
+ * This task does the following:
+ *     1. Gets the source folder for JS files
+ *     2. Concatenates all the files and generates *.js
+ *     3. Renames the JS file with suffix .min.js
+ *     4. Uglifies/Minifies the JS file and generates *.min.js
  */
 export const js = () => {
+	// Clean up old files.
 	del( './assets/js/*' );
 
-	return src( [
-		'./src/js/vendor/tabletop.min.js',
-		'./src/js/vendor/markerclusterer.js',
-		'./src/js/main.js',
-	] )
+	return src( './src/js/*.js' )
 		.pipe( plumber( errorHandler ) )
-		.pipe( concat( 'init.js' ) )
-		.pipe( uglify() )
-		.pipe( rename( {
-			suffix: '.min',
-		} ) )
+		.pipe( named() )
+		.pipe( webpackStream( webpackConfig, webpack ) )
 		.pipe( dest( './assets/js/' ) )
 		.pipe( server.reload( {
 			match: '**/*.js', // Sourcemap is in stream so match for actual JS files
