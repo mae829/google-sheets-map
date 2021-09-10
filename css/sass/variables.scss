@@ -1,0 +1,40 @@
+// Color Variables
+// ---------------------------------
+$bleu: #1392db;
+$gray: #292929;
+$red: #E21B23;
+$white: #fff;
+
+$light-bleu: lighten( $bleu, 5% );
+$dark-bleu: darken( $bleu, 5% );
+
+
+// Font Variables
+// ---------------------------------
+$raleway: 'Raleway', sans-serif;
+$league-gothic: 'League Gothic', 'Helvetica Neue', 'Helvetica', arial;
+$open-sans-bold: 'Open Sans', sans-serif;
+
+
+// Media Queries
+// ---------------------------------
+// Switched to Materialize Grid
+$screen-sm-min: 768px;
+$screen-md-min: 900px;
+$screen-lg-min: 1200px;
+$screen-xl-min: 1280px;
+
+$screen-xs-max: ($screen-sm-min - 1);
+$screen-sm-max: ($screen-md-min - 1);
+$screen-md-max: ($screen-lg-min - 1);
+
+$xs-only-breakpoint: "screen and (max-width:#{$screen-xs-max})";
+$sm-breakpoint: "screen and (min-width:#{$screen-sm-min})";
+$sm-only-breakpoint: "screen and (min-width:#{$screen-sm-min}) and (max-width:#{$screen-sm-max})";
+$md-breakpoint: "screen and (min-width:#{$screen-md-min})";
+$md-only-breakpoint: "screen and (min-width:${screen-md-min}) and (max-width:#{$screen-md-max})";
+$lg-breakpoint: "screen and (min-width:#{$screen-lg-min})";
+
+// Miscellaneous
+// ---------------------------------
+$transition: all .25s ease;

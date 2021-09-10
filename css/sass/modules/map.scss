@@ -1,0 +1,15 @@
+/* Always set the map height explicitly to define the size of the div
+ * element that contains the map. */
+.wrapper,
+.map-container,
+.map-canvas {
+	height: 100%;
+	width: 100%;
+}
+
+.map-container,
+.map-canavas {
+	@media #{$sm-breakpoint} {
+		width: calc( 100% - 320px );
+	}
+}

@@ -1,0 +1,55 @@
+.sidebar {
+	background-color: $gray;
+	color: $white;
+	height: 100%;
+	overflow: hidden;
+	position: absolute;
+	right: 100%;
+	top: 0;
+	transition: $transition;
+	width: 100%;
+
+	& > * {
+		padding: 15px;
+		width: 100%
+	}
+
+	@media #{$sm-breakpoint} {
+		right: 0;
+		width: 320px;
+
+		& > * {
+			height: 100%;
+			width: 100%;
+		}
+
+		.location__close {
+			display: none;
+		}
+	}
+
+	.minimal & {
+
+		&.open {
+			right: 0;
+		}
+
+	}
+}
+
+.location {
+	background-color: $gray;
+	position: absolute;
+
+	@media #{$sm-breakpoint} {
+		// left: 100%;
+		top: 0;
+		left: 0;
+		width: 320px;
+	}
+
+	&__name {
+		text-align: center;
+	}
+
+}

@@ -1,0 +1,21 @@
+.cities {
+
+	&__overlay {
+		background-color: rgba( 0, 0, 0, 0.8 );
+		display: none;
+		height: 100%;
+		left: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
+
+	&__selection {
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		transform: translate( -50%, -50% );
+	}
+
+}
+

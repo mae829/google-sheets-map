@@ -1,0 +1,27 @@
+{
+  "name": "google-sheets-map",
+  "version": "1.0.0",
+  "author": "Miguel Estrada",
+  "description": "Google Map with markers from Google Sheet data",
+  "license": "MIT",
+  "main": "index.php",
+  "keywords": [
+    "Google Maps",
+    "Google Sheets"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "browser-sync": "^2.27.5",
+    "gulp": "^4.0.2",
+    "gulp-autoprefixer": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-jshint": "^2.1.0",
+    "gulp-plumber": "^1.2.1",
+    "gulp-rename": "^2.0.0",
+    "gulp-sass": "^5.0.0",
+    "gulp-uglify": "^3.0.2",
+    "gulp-util": "^3.0.6",
+    "jshint": "^2.13.1"
+  }
+}
