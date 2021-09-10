@@ -12,7 +12,6 @@ import nodeSass from 'node-sass';
 import gulpSass from 'gulp-sass';
 
 // JS related plugins.
-import jshint from 'gulp-jshint';
 import uglify from 'gulp-uglify';
 import concat from 'gulp-concat';
 
@@ -106,8 +105,6 @@ export const scripts = () => {
 			'js/main.js'
 		] )
 		.pipe( plumber( errorHandler ) )
-		.pipe( jshint() )
-		.pipe( jshint.reporter('default') )
 		.pipe( concat('init.js') )
 		.pipe( uglify() )
 		.pipe( rename( {
