@@ -1,55 +1,52 @@
 .sidebar {
-	background-color: $gray;
-	color: $white;
-	height: 100%;
-	overflow: hidden;
-	position: absolute;
-	right: 100%;
-	top: 0;
-	transition: $transition;
-	width: 100%;
+  background-color: $gray;
+  color: $white;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  right: 100%;
+  top: 0;
+  transition: $transition;
+  width: 100%;
 
-	& > * {
-		padding: 15px;
-		width: 100%
-	}
+  @media #{$sm-breakpoint} {
+    right: 0;
+    width: 320px;
 
-	@media #{$sm-breakpoint} {
-		right: 0;
-		width: 320px;
+    > * {
+      height: 100%;
+      width: 100%;
+    }
 
-		& > * {
-			height: 100%;
-			width: 100%;
-		}
+    .location__close {
+      display: none;
+    }
+  }
 
-		.location__close {
-			display: none;
-		}
-	}
+  > * {
+    padding: 15px;
+    width: 100%;
+  }
 
-	.minimal & {
-
-		&.open {
-			right: 0;
-		}
-
-	}
+  .minimal & {
+    &.open {
+      right: 0;
+    }
+  }
 }
 
 .location {
-	background-color: $gray;
-	position: absolute;
+  background-color: $gray;
+  position: absolute;
 
-	@media #{$sm-breakpoint} {
-		// left: 100%;
-		top: 0;
-		left: 0;
-		width: 320px;
-	}
+  @media #{$sm-breakpoint} {
+    left: 0;
+    // left: 100%;
+    top: 0;
+    width: 320px;
+  }
 
-	&__name {
-		text-align: center;
-	}
-
+  &__name {
+    text-align: center;
+  }
 }
