@@ -4,7 +4,7 @@
 		<meta charset="UTF-8">
 		<title>Google Sheets Map</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-		<link rel="stylesheet" href="css/style.min.css">
+		<link rel="stylesheet" href="./assets/css/style.min.css">
 
 		<script>
 			WebFontConfig = {
@@ -131,9 +131,7 @@
 		</div>
 
 		<script src="https://maps.googleapis.com/maps/api/js?key=PLACEAPIKEYHERE"></script>
-		<!-- <script src="js/vendor/tabletop.min.js"></script> -->
-		<script src="js/vendor/instafeed.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		<script src="js/init.min.js" defer></script>
+		<script src="./assets/js/init.min.js" defer></script>
 	</body>
 </html>

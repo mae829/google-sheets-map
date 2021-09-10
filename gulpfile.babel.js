@@ -82,7 +82,7 @@ const reload = done => {
  * @param {Function} done Callback function for async purposes.
  */
 export const styles = done => {
-	src( 'css/sass/main.scss' )
+	src( './src/sass/main.scss' )
 		.pipe( sass() )
 		.pipe( autoprefixer() )
 		.pipe( cleanCSS() )
@@ -90,7 +90,7 @@ export const styles = done => {
 			basename: 'style',
 			suffix: '.min',
 		} ) )
-		.pipe( dest( 'css' ) )
+		.pipe( dest( './assets/css' ) )
 		.pipe( server.stream( {
 			match: '**/*.css', // Sourcemap is in stream so match for actual CSS files
 		} ) );
@@ -107,9 +107,9 @@ styles.description = 'Compiles Sass, Autoprefixes it and Minifies CSS.';
  */
 export const jsLinter = () => {
 	return src( [
-		'./js/**/*.js',
-		'!js/vendor/**',
-		'!js/**/*.min.js',
+		'./src/js/**/*.js',
+		'!src/js/vendor/**',
+		'!src/js/**/*.min.js',
 	] )
 		.pipe( eslint() )
 		.pipe( eslint.format() );
@@ -121,9 +121,9 @@ jsLinter.description = 'Linter for JavaScript';
  */
 export const js = () => {
 	return src( [
-		'js/vendor/tabletop.min.js',
-		'js/vendor/markerclusterer.js',
-		'js/main.js',
+		'./src/js/vendor/tabletop.min.js',
+		'./src/js/vendor/markerclusterer.js',
+		'./src/js/main.js',
 	] )
 		.pipe( plumber( errorHandler ) )
 		.pipe( concat( 'init.js' ) )
@@ -131,7 +131,7 @@ export const js = () => {
 		.pipe( rename( {
 			suffix: '.min',
 		} ) )
-		.pipe( dest( 'js' ) )
+		.pipe( dest( './assets/js/' ) )
 		.pipe( server.reload( {
 			match: '**/*.js', // Sourcemap is in stream so match for actual JS files
 			stream: true,
@@ -146,8 +146,8 @@ export const scripts = series( jsLinter, js );
  */
 export const dev = series( styles, scripts, browsersync, () => {
 	watch( '**/*.php', reload ); // Reload on PHP file changes.
-	watch( 'css/**/*.scss', styles ); // Reload on SCSS file changes.
-	watch( [ 'js/*.js', '!js/*.min.js' ], scripts ); // Reload on JS file changes.
+	watch( './src/sass/**/*.scss', styles ); // Reload on SCSS file changes.
+	watch( './src/js/**/*.js', scripts ); // Reload on JS file changes.
 } );
 dev.description = 'Start up our full dev workflow.';
 
