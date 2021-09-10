@@ -12,6 +12,7 @@ import nodeSass from 'node-sass';
 import gulpSass from 'gulp-sass';
 
 // JS related plugins.
+import eslint from 'gulp-eslint';
 import uglify from 'gulp-uglify';
 import concat from 'gulp-concat';
 
@@ -96,9 +97,26 @@ export const styles = done => {
 styles.description = 'Compiles Sass, Autoprefixes it and Minifies CSS.';
 
 /**
+ * Task: `jsLinter`.
+ * This task does the following:
+ *    1. Gets all our theme files
+ *    2. Lints theme files to keep code up to standards and consistent
+ */
+ export const jsLinter = () => {
+	return src( [
+		'./js/**/*.js',
+		'!js/vendor/**',
+		'!js/**/*.min.js',
+	] )
+		.pipe( eslint() )
+		.pipe( eslint.format() );
+};
+jsLinter.description = 'Linter for JavaScript';
+
+/**
  * Handle JS build.
  */
-export const scripts = () => {
+export const js = () => {
 	return src( [
 			'js/vendor/tabletop.min.js',
 			'js/vendor/markerclusterer.js',
@@ -116,7 +134,9 @@ export const scripts = () => {
 			stream: true
 		} ) );
 };
-scripts.description = 'Run all JS compression and sourcemap work.';
+js.description = 'Run all JS compression and sourcemap work.';
+
+export const scripts = series( jsLinter, js );
 
 /**
  * Watch Tasks.
