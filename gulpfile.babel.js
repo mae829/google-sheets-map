@@ -19,6 +19,7 @@ import concat from 'gulp-concat';
 
 // Utility related plugins.
 import browserSync from 'browser-sync';
+import del from 'del';
 import notify from 'gulp-notify';
 import plumber from 'gulp-plumber';
 import rename from 'gulp-rename';
@@ -102,6 +103,8 @@ sassLinter.description = 'Lint through all our SASS/SCSS files so our code is co
  * @param {Function} done Callback function for async purposes.
  */
 export const css = done => {
+	del( './assets/css/*' );
+
 	src( './src/sass/main.scss' )
 		.pipe( sass() )
 		.pipe( autoprefixer() )
@@ -140,6 +143,8 @@ jsLinter.description = 'Linter for JavaScript';
  * Handle JS build.
  */
 export const js = () => {
+	del( './assets/js/*' );
+
 	return src( [
 		'./src/js/vendor/tabletop.min.js',
 		'./src/js/vendor/markerclusterer.js',
