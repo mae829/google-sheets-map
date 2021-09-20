@@ -2,6 +2,7 @@
 import MarkerClusterer from '@google/markerclusterer';
 import Tabletop from 'tabletop';
 ( function( $ ) {
+	const cacheTime = new URLSearchParams( window.location.search ).get( 'cache' ) || 30 * 24 * 60 * 60 * 1000;
 	const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/{GOOGLE_SHEET_ID}/pubhtml';
 	// var map;
 
@@ -83,20 +84,17 @@ import Tabletop from 'tabletop';
 			url: 'inc/sheetdata.json',
 			success( data, textStatus, jqXHR ) {
 				/**
-				 * Check if the data is old (more than 30 minutes)
+				 * Check if the data is old (more than 30 days or cachebuster)
 				 * If it is, make request for new data with Tabletop and save the result into file,
 				 * else use the old data
 				 */
 				let nowTime = new Date();
 				const fileTime = new Date( jqXHR.getResponseHeader( 'Last-Modified' ) );
-				let cacheTime = 0;
 
 				nowTime = nowTime.getTime();
-				// cacheTime       = fileTime.getTime() + ( 30 * 60000 );
-				// cacheTime       = fileTime.getTime() + ( 300 * 60000 ); // for long development
-				cacheTime = fileTime.getTime() + 60; // for quick refresh of results
+				const fileCachetime = fileTime.getTime() + parseInt( cacheTime );
 
-				if ( nowTime > cacheTime ) {
+				if ( nowTime > fileCachetime ) {
 					getNewData();
 				} else {
 					sheetSelection( data );
