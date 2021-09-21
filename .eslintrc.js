@@ -5,9 +5,13 @@ module.exports = {
 		"node": true,
 		"jquery": true
 	},
+	"plugins": [
+		"no-jquery"
+	],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@wordpress/eslint-plugin/recommended-with-formatting",
+		"plugin:no-jquery/all",
 	],
 	"parserOptions": {
 		"ecmaVersion": 2018,
