@@ -11,9 +11,6 @@ module.exports = {
 	},
 	mode: 'production',
 	devtool: 'nosources-source-map',
-	externals: {
-		jquery: 'jQuery',
-	},
 	output: {
 		filename: '[name].min.js',
 	},

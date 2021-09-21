@@ -131,7 +131,6 @@
 		</div>
 
 		<script src="https://maps.googleapis.com/maps/api/js?key=PLACEAPIKEYHERE"></script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 		<script src="./assets/js/main.min.js" defer></script>
 	</body>
 </html>
