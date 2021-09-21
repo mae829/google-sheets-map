@@ -1,10 +1,12 @@
 /* global google */
 import MarkerClusterer from '@google/markerclusterer';
-import Tabletop from 'tabletop';
+import Papa from 'papaparse';
+
 ( function( $ ) {
+	const sheetID = '{GOOGLE_SHEET_ID}';
+	const apiKey = '{GOOGLE_API_KEY}';
 	const cacheTime = new URLSearchParams( window.location.search ).get( 'cache' ) || 30 * 24 * 60 * 60 * 1000;
-	const publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/{GOOGLE_SHEET_ID}/pubhtml';
-	// var map;
+	let useLocalData = true;
 
 	// our main global object that holds all our info
 	const diningMap = {
@@ -79,32 +81,75 @@ import Tabletop from 'tabletop';
 		// Add a call to fade in all our markers once the map itself has loaded
 		// google.maps.event.addListenerOnce( diningMap.map, 'idle', fadeInMarkers );
 
-		// Request our saved data file
-		$.ajax( {
-			url: 'inc/sheetdata.json',
-			success( data, textStatus, jqXHR ) {
-				/**
-				 * Check if the data is old (more than 30 days or cachebuster)
-				 * If it is, make request for new data with Tabletop and save the result into file,
-				 * else use the old data
-				 */
-				let nowTime = new Date();
-				const fileTime = new Date( jqXHR.getResponseHeader( 'Last-Modified' ) );
+		async function getLocalFile() {
+			const response = await fetch( './inc/sheetdata.json' );
 
-				nowTime = nowTime.getTime();
-				const fileCachetime = fileTime.getTime() + parseInt( cacheTime );
+			if ( ! response.ok ) {
+				throw new Error( `HTTP error! status: ${ response.status }` );
+			}
 
-				if ( nowTime > fileCachetime ) {
-					getNewData();
+			/**
+			 * Check if the data is old (more than 30 days or cachebuster)
+			 * If it is, make request for new data with Tabletop and save the result into file,
+			 * else use the old data
+			 */
+			let nowTime = new Date();
+			const fileTime = new Date( response.headers.get( 'Last-Modified' ) );
+
+			nowTime = nowTime.getTime();
+			const fileCachetime = fileTime.getTime() + parseInt( cacheTime );
+
+			useLocalData = nowTime > fileCachetime ? false : true;
+
+			return response.json();
+		}
+
+		async function getNewSheets() {
+			const googlesheetsResponse = await fetch( `https://sheets.googleapis.com/v4/spreadsheets/${ sheetID }/?key=${ apiKey }` );
+
+			if ( ! googlesheetsResponse.ok ) {
+				throw new Error( `HTTP error! status: ${ googlesheetsResponse.status }` );
+			}
+
+			const sheetsData = await googlesheetsResponse.json();
+			const sheetsTitles = {};
+			sheetsData.sheets.forEach( sheetObject => {
+				sheetsTitles[ sheetObject.properties.title ] = [];
+			} );
+
+			return { ...sheetsTitles };
+		}
+
+		getLocalFile()
+			.then( fileData => {
+				if ( useLocalData ) {
+					selectSheet( fileData );
 				} else {
-					sheetSelection( data );
+					getNewSheets()
+						.then( data => {
+							selectSheet( data );
+						} );
 				}
-			},
-			error() {
-				// File was empty or something went wrong, get new data and save
-				getNewData();
-			},
-		} );
+			} )
+			.catch( error => {
+				console.log( error );
+			} );
+
+		/**
+		 * IF our data only holds one city/sheet, then it will just jump into displaying the markers for that city
+		 * or else it will update the UI for city/sheet selection
+		 *
+		 * @param {Object} data Holds all the data returned by our sheet
+		 */
+		function selectSheet( data = null ) {
+			const cities = Object.keys( data );
+
+			if ( cities.length > 1 ) {
+				initOverlay( cities, data );
+			} else {
+				initMarkers( data[ cities[ 0 ] ] );
+			}
+		}
 
 		$( '.location__close' ).on( 'click', function( e ) {
 			e.preventDefault();
@@ -115,36 +160,6 @@ import Tabletop from 'tabletop';
 
 			return false;
 		} );
-
-		/**
-		 * Request new data from our Google sheet using Tabletop
-		 */
-		function getNewData() {
-			// console.log('fetching new data');
-
-			Tabletop.init( {
-				key: publicSpreadsheetUrl,
-				callback( newData, tabletop ) {
-					// Manipulate our data so we can save and use later
-					const dataToUse = {};
-
-					for ( const key in newData ) {
-						dataToUse[ key ] = tabletop.sheets( key ).all();
-					}
-
-					// jQuery method (which technically is compatible with even IE)
-					/*$.each( newData, function( key, value ) {
-                        dataToUse[key]  = tabletop.sheets(key).all();
-                    } );*/
-
-					// Save our data
-					saveData( dataToUse );
-
-					// Next step is to select sheet (city)
-					sheetSelection( dataToUse );
-				},
-			} );
-		}
 
 		/**
 		 * Attempt to save our data for cache purposes
@@ -160,23 +175,6 @@ import Tabletop from 'tabletop';
 				},
 				url: 'inc/savedata.php',
 			} );
-		}
-
-		/**
-		 * IF our data only holds one city/sheet, then it will just jump into displaying the markers for that city
-		 * or else it will update the UI for city/sheet selection
-		 *
-		 * @param {Object} data Holds all the data returned by our sheet
-		 */
-		function sheetSelection( data ) {
-			const cities = Object.keys( data );
-			// const cityData = '';
-
-			if ( cities.length > 1 ) {
-				initOverlay( cities, data );
-			} else {
-				initMarkers( data[ cities[ 0 ] ] );
-			}
 		}
 
 		function initOverlay( cities, data ) {
@@ -198,10 +196,34 @@ import Tabletop from 'tabletop';
 			$selectCities.on( 'change', function() {
 				const city = $( this ).val();
 
-				initMarkers( data[ city ] );
+				if ( useLocalData ) {
+					initMarkers( data[ city ] );
+				} else {
+					getNewSheetData( data[ city ] )
+						.then( singleSheetData => {
+							initMarkers( singleSheetData );
+						} )
+						.catch( error => {
+							throw new Error( `Error fetching single sheet data! response: ${ error }` );
+						} );
+				}
 
 				$citiesOverlay.fadeOut();
 			} );
+		}
+
+		async function getNewSheetData( sheetName ) {
+			const response = await fetch( `https://docs.google.com/spreadsheets/d/${ sheetID }/gviz/tq?tqx=out:csv&sheet=${ sheetName }&tq=SELECT *` );
+
+			if ( ! response.ok ) {
+				throw new Error( `Error fetching single sheet data! status: ${ response.status }` );
+			}
+
+			let sheetData = await response.text();
+
+			sheetData = Papa.parse( sheetData, { header: true } );
+
+			return sheetData.data;
 		}
 
 		/**
