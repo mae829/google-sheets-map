@@ -9,6 +9,13 @@
     "Google Maps",
     "Google Sheets"
   ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "scripts": "gulp scripts",
+    "styles": "gulp styles",
+    "dev": "gulp dev",
+    "build": "gulp build"
+  },
   "dependencies": {
     "@google/markerclusterer": "^2.0.9",
     "tabletop": "^1.6.3"
