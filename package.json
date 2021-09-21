@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@google/markerclusterer": "^2.0.9",
+    "papaparse": "^5.3.1",
     "tabletop": "^1.6.3"
   },
   "devDependencies": {
