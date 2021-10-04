@@ -17,6 +17,7 @@ module.exports = {
 		"sourceType": "module"
 	},
 	"rules": {
+		"@wordpress/no-global-event-listener": "off",
 		"arrow-parens": [
 			"error",
 			"as-needed"
