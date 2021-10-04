@@ -39,7 +39,7 @@ if ( 'titles' === $save_data_type ) {
 		}
 	}
 
-	fwrite( $fh, json_encode( $data_to_save, JSON_PRETTY_PRINT ) );
+	fwrite( $fh, json_encode( $data_to_save ) );
 	$message = 'Success: saved new titles.';
 }
 
@@ -47,7 +47,7 @@ if ( 'sheetData' === $save_data_type ) {
 	if ( array_key_exists( $data['sheetName'], $file_contents ) ) {
 		$file_contents[ $data['sheetName'] ] = $data_to_save;
 
-		fwrite( $fh, json_encode( $file_contents, JSON_PRETTY_PRINT ) );
+		fwrite( $fh, json_encode( $file_contents ) );
 		$message = 'Success: saved sheet data.';
 	}
 }
