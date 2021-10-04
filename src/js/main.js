@@ -112,29 +112,10 @@ import Papa from 'papaparse';
 	}
 
 	function saveSheetsTitles( titles ) {
-		fetch( './inc/savedata.php', {
-			method: 'POST',
-			mode: 'same-origin',
-			credentials: 'same-origin',
-			cache: 'no-cache',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify( {
-				type: 'titles',
-				dataToSave: titles,
-			} ),
-		} )
-			.then( response => response.json() )
-			.then( data => {
-				// Since the response will have been JSON but with errors, check that.
-				if ( ! data.success ) {
-					throw new Error( data.message );
-				}
-			} )
-			.catch( error => {
-				console.error( error.message );
-			} );
+		saveData( JSON.stringify( {
+			type: 'titles',
+			dataToSave: titles,
+		} ) );
 	}
 
 	getLocalFile()
@@ -186,17 +167,29 @@ import Papa from 'papaparse';
 	/**
 	 * Attempt to save our data for cache purposes
 	 *
-	 * @param {Object} dataToSave JSON data to save to our file.
+	 * @param {Object} bodyRequest JSON data with save to our file.
 	 */
-	function saveData( dataToSave ) {
-		// $.ajax( {
-		// 	type: 'POST',
-		// 	dataType: 'json',
-		// 	data: {
-		// 		dataToSave: JSON.stringify( dataToSave ),
-		// 	},
-		// 	url: 'inc/savedata.php',
-		// } );
+	function saveData( bodyRequest ) {
+		fetch( './inc/savedata.php', {
+			method: 'POST',
+			mode: 'same-origin',
+			credentials: 'same-origin',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: bodyRequest,
+		} )
+			.then( response => response.json() )
+			.then( data => {
+				// Since the response will have been JSON but with errors, check that.
+				if ( ! data.success ) {
+					throw new Error( data.message );
+				}
+			} )
+			.catch( error => {
+				console.error( error.message );
+			} );
 	}
 
 	function initOverlay( cities, data ) {
@@ -250,30 +243,11 @@ import Papa from 'papaparse';
 	}
 
 	function saveSheetData( sheetName, sheetData ) {
-		fetch( './inc/savedata.php', {
-			method: 'POST',
-			mode: 'same-origin',
-			credentials: 'same-origin',
-			cache: 'no-cache',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify( {
-				type: 'sheetData',
-				sheetName,
-				dataToSave: sheetData,
-			} ),
-		} )
-			.then( response => response.json() )
-			.then( data => {
-				// Since the response will have been JSON but with errors, check that.
-				if ( ! data.success ) {
-					throw new Error( data.message );
-				}
-			} )
-			.catch( error => {
-				console.error( error.message );
-			} );
+		saveData( JSON.stringify( {
+			type: 'sheetData',
+			sheetName,
+			dataToSave: sheetData,
+		} ) );
 	}
 
 	/**
