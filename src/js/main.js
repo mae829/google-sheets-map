@@ -125,7 +125,7 @@ import Papa from 'papaparse';
 				dataToSave: titles,
 			} ),
 		} )
-			.then( response => response.text() )
+			.then( response => response.json() )
 			.then( data => {
 				// Since the response will have been JSON but with errors, check that.
 				if ( ! data.success ) {

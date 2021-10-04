@@ -28,6 +28,7 @@ if ( null === $save_data_type || null === $data_to_save ) {
 $my_file       = './sheetdata.json';
 $file_contents = (array) json_decode( file_get_contents( $my_file ) );
 $fh            = fopen( $my_file, 'w' );
+$message       = '';
 
 // If file is not empty
 	// If saving titles
@@ -42,6 +43,17 @@ if ( 'titles' === $save_data_type ) {
 	}
 
 	fwrite( $fh, json_encode( $data_to_save, JSON_PRETTY_PRINT ) );
+	$message = 'Success: saved new titles.';
 }
 
 fclose( $fh );
+
+header( 'Content-Type: application/json; charset=utf-8' );
+http_response_code( 200 );
+
+echo json_encode( [
+	'success' => true,
+	'message' => $message,
+] );
+
+die();
