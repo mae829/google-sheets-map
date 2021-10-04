@@ -29,6 +29,14 @@ module.exports = {
 		"eqeqeq": [ "error", "smart" ],
 		"lines-around-comment": "off",
 		"space-in-parens": [ "warn", "always" ],
+		"no-console": [
+			"error", {
+				"allow": [
+					"warn",
+					"error"
+				]
+			}
+		],
 		"no-empty-function": [
 			"warn", {
 				"allow": [
