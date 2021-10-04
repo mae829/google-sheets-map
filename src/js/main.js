@@ -220,7 +220,7 @@ import Papa from 'papaparse';
 			if ( useLocalData ) {
 				initMarkers( data[ city ] );
 			} else {
-				getNewSheetData( data[ city ] )
+				getNewSheetData( city )
 					.then( singleSheetData => {
 						initMarkers( singleSheetData );
 					} )
@@ -244,7 +244,36 @@ import Papa from 'papaparse';
 
 		sheetData = Papa.parse( sheetData, { header: true } );
 
+		saveSheetData( sheetName, sheetData.data );
+
 		return sheetData.data;
+	}
+
+	function saveSheetData( sheetName, sheetData ) {
+		fetch( './inc/savedata.php', {
+			method: 'POST',
+			mode: 'same-origin',
+			credentials: 'same-origin',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify( {
+				type: 'sheetData',
+				sheetName,
+				dataToSave: sheetData,
+			} ),
+		} )
+			.then( response => response.json() )
+			.then( data => {
+				// Since the response will have been JSON but with errors, check that.
+				if ( ! data.success ) {
+					throw new Error( data.message );
+				}
+			} )
+			.catch( error => {
+				console.error( error.message );
+			} );
 	}
 
 	/**

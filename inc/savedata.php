@@ -12,7 +12,7 @@ $data = (array) json_decode( file_get_contents( 'php://input', true ) );
 $save_data_type = ! empty( $data['type'] ) ? $data['type'] : null;
 $data_to_save   = ! empty( $data['dataToSave'] ) ? (array) $data['dataToSave'] : null;
 
-if ( null === $save_data_type || null === $data_to_save ) {
+if ( null === $save_data_type || null === $data_to_save || ( 'sheetData' === $save_data_type && empty( $data['sheetName'] ) ) ) {
 	header( 'Content-Type: application/json; charset=utf-8' );
 	http_response_code( 400 );
 
@@ -30,9 +30,6 @@ $file_contents = (array) json_decode( file_get_contents( $my_file ) );
 $fh            = fopen( $my_file, 'w' );
 $message       = '';
 
-// If file is not empty
-	// If saving titles
-	// If saving sheet data
 if ( 'titles' === $save_data_type ) {
 	foreach ( $data_to_save as $sheet_name => $sheet_data ) {
 		// Get any existing sheet data and add it to our new sheet names,
@@ -44,6 +41,15 @@ if ( 'titles' === $save_data_type ) {
 
 	fwrite( $fh, json_encode( $data_to_save, JSON_PRETTY_PRINT ) );
 	$message = 'Success: saved new titles.';
+}
+
+if ( 'sheetData' === $save_data_type ) {
+	if ( array_key_exists( $data['sheetName'], $file_contents ) ) {
+		$file_contents[ $data['sheetName'] ] = $data_to_save;
+
+		fwrite( $fh, json_encode( $file_contents, JSON_PRETTY_PRINT ) );
+		$message = 'Success: saved sheet data.';
+	}
 }
 
 fclose( $fh );
