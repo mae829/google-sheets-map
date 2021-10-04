@@ -99,12 +99,42 @@ import Papa from 'papaparse';
 		}
 
 		const sheetsData = await googlesheetsResponse.json();
-		const sheetsTitles = {};
+		let sheetsTitles = {};
 		sheetsData.sheets.forEach( sheetObject => {
 			sheetsTitles[ sheetObject.properties.title ] = [];
 		} );
 
-		return { ...sheetsTitles };
+		sheetsTitles = { ...sheetsTitles };
+
+		saveSheetsTitles( sheetsTitles );
+
+		return sheetsTitles;
+	}
+
+	function saveSheetsTitles( titles ) {
+		fetch( './inc/savedata.php', {
+			method: 'POST',
+			mode: 'same-origin',
+			credentials: 'same-origin',
+			cache: 'no-cache',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify( {
+				type: 'titles',
+				dataToSave: titles,
+			} ),
+		} )
+			.then( response => response.text() )
+			.then( data => {
+				// Since the response will have been JSON but with errors, check that.
+				if ( ! data.success ) {
+					throw new Error( data.message );
+				}
+			} )
+			.catch( error => {
+				console.error( error.message );
+			} );
 	}
 
 	getLocalFile()
@@ -119,7 +149,12 @@ import Papa from 'papaparse';
 			}
 		} )
 		.catch( error => {
-			console.log( error );
+			console.warn( 'Error fetching local file. Fetching new data. Error data:', error );
+
+			getNewSheets()
+				.then( data => {
+					selectSheet( data );
+				} );
 		} );
 
 	/**
