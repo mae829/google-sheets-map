@@ -101,7 +101,9 @@ import Papa from 'papaparse';
 		const sheetsData = await googlesheetsResponse.json();
 		let sheetsTitles = {};
 		sheetsData.sheets.forEach( sheetObject => {
-			sheetsTitles[ sheetObject.properties.title ] = [];
+			if ( undefined === sheetObject.properties.hidden ) {
+				sheetsTitles[ sheetObject.properties.title ] = [];
+			}
 		} );
 
 		sheetsTitles = { ...sheetsTitles };
